@@ -1,0 +1,201 @@
+// This sample demonstrates handling intents from an Alexa skill using the Alexa Skills Kit SDK (v2).
+// Please visit https://alexa.design/cookbook for additional examples on implementing slots, dialog management,
+// session persistence, api calls, and more.
+const Alexa = require('ask-sdk-core');
+
+const LaunchRequestHandler = {
+    canHandle(handlerInput) {
+        return handlerInput.requestEnvelope.request.type === 'LaunchRequest';
+    },
+    handle(handlerInput) {
+        const speechText = 'Hola, nuevo por aqui verdad? ¿cómo te llamas? ';
+        return handlerInput.responseBuilder
+            .speak(speechText)
+            .reprompt(speechText)
+            .getResponse();
+    }
+};
+const NombreHandler = {
+  canHandle(handlerInput) {
+    const request = handlerInput.requestEnvelope.request;
+    return request.type === 'IntentRequest'
+        && request.intent.name === 'NombreIntent';
+  },
+  handle(handlerInput) {
+    const request = handlerInput.requestEnvelope.request;
+    
+    var nombre = request.intent.slots.nombre.value;
+    
+    console.log('nombre -'+nombre);
+    if (typeof nombre === 'undefined') nombre = 'pipo';
+    
+    const data = [
+      'Genial '+nombre+' quiero conocerte mejor, dime ¿qué te gusta?',
+      nombre+' que interesante, y ¿que es lo que más te gusta?',
+      'Siempre había querido tener una amistad con alguien llamado '+nombre+', y... ¿qué le gusta a '+nombre+'?',
+    ];
+    const factArr = data;
+    const factIndex = Math.floor(Math.random() * factArr.length);
+    const randomFact = factArr[factIndex];
+    const speechOutput = GET_FACT_MESSAGE + randomFact;
+
+    return handlerInput.responseBuilder
+      .speak(speechOutput)
+      .withSimpleCard(SKILL_NAME, speechOutput)
+      .reprompt('add a reprompt if you want to keep the session open for the user to respond')
+      .getResponse();
+  },
+};
+    const GustoHandler = {
+  canHandle(handlerInput) {
+    const request = handlerInput.requestEnvelope.request;
+    return request.type === 'IntentRequest'
+        && request.intent.name === 'GustoIntent';
+  },
+  handle(handlerInput) {
+    const request = handlerInput.requestEnvelope.request;
+    
+    var Gusto = request.intent.slots.Gusto.value;
+    
+    console.log('Gusto -'+Gusto);
+    if (typeof Gusto === 'undefined') Gusto = 'pizza';
+    
+    const data = [
+      'El gusto por '+Gusto+' dice más de lo que imaginas,... ¿hay algo en lo que se te dificulte aprender?',
+      Gusto+'... pues ya somos 2 entonces, y ¿qué es lo que más te cuesta aprender?',
+      'Vaya que los humanos son raros , y... ¿qué Materia se te dificulta?',
+    ];
+    const factArr = data;
+    const factIndex = Math.floor(Math.random() * factArr.length);
+    const randomFact = factArr[factIndex];
+    const speechOutput = GET_FACT_MESSAGE + randomFact;
+
+    return handlerInput.responseBuilder
+      .speak(speechOutput)
+      .withSimpleCard(SKILL_NAME, speechOutput)
+      .reprompt('add a reprompt if you want to keep the session open for the user to respond')
+      .getResponse();
+  },
+};
+const DebilidadHandler = {
+  canHandle(handlerInput) {
+    const request = handlerInput.requestEnvelope.request;
+    return request.type === 'IntentRequest'
+        && request.intent.name === 'DebilidadIntent';
+  },
+  handle(handlerInput) {
+    const request = handlerInput.requestEnvelope.request;
+    
+    var Debilidad = request.intent.slots.Debilidad.value;
+    
+    console.log('Debilidad -'+Debilidad);
+    if (typeof Debilidad === 'undefined') Debilidad = 'historia';
+    var txt = 'Hola, nuevo por aqui verdad? ¿cómo te llamas? ';
+    if (Debilidad === 'historia') txt = 'Si hablamos de hacer historia, fue la que hizo Francia al coronarse como campeones de la copa del mundo, pero ¿también sabias que en la revolución Francesa promovió la creación de los derechos humanos?';
+    if (Debilidad === 'fisica') txt = 'Sabías que la pizza tal y como la conocemos viene de Nápoles, Italia, en este mismo país, pero en Pisa se cree, fue donde Galileo Galilei experimento su teoría de caída libre, lanzando dos objetos de diferentes pesos';
+    if (Debilidad === 'matemáticas') txt = 'las mates lol ';
+    
+    const speechOutput = txt;
+    return handlerInput.responseBuilder
+      .speak(speechOutput)
+      .withSimpleCard(SKILL_NAME, speechOutput)
+      .reprompt('add a reprompt if you want to keep the session open for the user to respond')
+      .getResponse();
+  },
+};
+
+const HelpIntentHandler = {
+    canHandle(handlerInput) {
+        return handlerInput.requestEnvelope.request.type === 'IntentRequest'
+            && handlerInput.requestEnvelope.request.intent.name === 'AMAZON.HelpIntent';
+    },
+    handle(handlerInput) {
+        const speechText = 'You can say hello to me! How can I help?';
+
+        return handlerInput.responseBuilder
+            .speak(speechText)
+            .reprompt(speechText)
+            .getResponse();
+    }
+};
+const CancelAndStopIntentHandler = {
+    canHandle(handlerInput) {
+        return handlerInput.requestEnvelope.request.type === 'IntentRequest'
+            && (handlerInput.requestEnvelope.request.intent.name === 'AMAZON.CancelIntent'
+                || handlerInput.requestEnvelope.request.intent.name === 'AMAZON.StopIntent');
+    },
+    handle(handlerInput) {
+        const speechText = 'Goodbye!';
+        return handlerInput.responseBuilder
+            .speak(speechText)
+            .getResponse();
+    }
+};
+const SessionEndedRequestHandler = {
+    canHandle(handlerInput) {
+        return handlerInput.requestEnvelope.request.type === 'SessionEndedRequest';
+    },
+    handle(handlerInput) {
+        // Any cleanup logic goes here.
+        return handlerInput.responseBuilder.getResponse();
+    }
+};
+
+// The intent reflector is used for interaction model testing and debugging.
+// It will simply repeat the intent the user said. You can create custom handlers
+// for your intents by defining them above, then also adding them to the request
+// handler chain below.
+const IntentReflectorHandler = {
+    canHandle(handlerInput) {
+        return handlerInput.requestEnvelope.request.type === 'IntentRequest';
+    },
+    handle(handlerInput) {
+        const intentName = handlerInput.requestEnvelope.request.intent.name;
+        const speechText = `You just triggered ${intentName}`;
+
+        return handlerInput.responseBuilder
+            .speak(speechText)
+            .reprompt('add a reprompt if you want to keep the session open for the user to respond')
+            .getResponse();
+    }
+};
+
+// Generic error handling to capture any syntax or routing errors. If you receive an error
+// stating the request handler chain is not found, you have not implemented a handler for
+// the intent being invoked or included it in the skill builder below.
+const ErrorHandler = {
+    canHandle() {
+        return true;
+    },
+    handle(handlerInput, error) {
+        console.log(`~~~~ Error handled: ${error.message}`);
+        const speechText = `Sorry, I couldn't understand what you said. Please try again.`;
+
+        return handlerInput.responseBuilder
+            .speak(speechText)
+            .reprompt(speechText)
+            .getResponse();
+    }
+};
+const SKILL_NAME = 'Aprendizaje Inteligente';
+const GET_FACT_MESSAGE = '';
+const HELP_MESSAGE = '  para detenerme puedes decir: ¡Cancela!... ¿Cómo te puedo ayudar?';
+const HELP_REPROMPT = '¿Cómo te puedo ayudar?';
+const STOP_MESSAGE = 'Adios y <say-as interpret-as="interjection">buena suerte</say-as>';
+// This handler acts as the entry point for your skill, routing all request and response
+// payloads to the handlers above. Make sure any new handlers or interceptors you've
+// defined are included below. The order matters - they're processed top to bottom.
+exports.handler = Alexa.SkillBuilders.custom()
+    .addRequestHandlers(
+        LaunchRequestHandler,
+        DebilidadHandler,
+        NombreHandler,
+        GustoHandler,
+        HelpIntentHandler,
+        CancelAndStopIntentHandler,
+        SessionEndedRequestHandler,
+        IntentReflectorHandler) // make sure IntentReflectorHandler is last so it doesn't override your custom intent handlers
+    .addErrorHandlers(
+        ErrorHandler)
+    .lambda();
+    
